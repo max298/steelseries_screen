@@ -31,6 +31,7 @@ impl SteelSeriesLCDType {
 pub struct SteelSeriesDisplay {
     lcd_type: SteelSeriesLCDType,
     framebuffer: Vec<u8>,
+    api: GameSenseAPI,
 }
 
 impl SteelSeriesDisplay {

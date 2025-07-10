@@ -1,6 +1,6 @@
 use embedded_graphics::{
     draw_target::DrawTarget,
-    mono_font::{MonoTextStyle, iso_8859_10::FONT_6X10},
+    mono_font::{iso_8859_10::FONT_6X10, MonoTextStyle},
     pixelcolor::BinaryColor,
     prelude::*,
     text::Text,
@@ -10,7 +10,7 @@ use steelseries_screen::SteelSeriesDisplay;
 fn main() {
     let mut display = SteelSeriesDisplay::new(
         steelseries_screen::SteelSeriesLCDType::Apex,
-        "HELLO_WORLD".into(),
+        "HELLO_WORLD".to_string(),
     );
     // optional: set developer name and game-description
     display.developer("Max");
