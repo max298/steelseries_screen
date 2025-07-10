@@ -23,8 +23,6 @@ fn main() {
 
     let text_style = MonoTextStyle::new(&FONT_6X10, BinaryColor::On);
 
-    // clear the display
-    display.clear(BinaryColor::Off).unwrap();
     let _ = Text::new("Hello World!", Point::new(0, 6), text_style).draw(&mut display);
     // call flush to send the current framebuffer to the device
     let _ = display.flush();
