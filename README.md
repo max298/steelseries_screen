@@ -16,7 +16,7 @@ Add the crate to your `Cargo.toml` (once published):
 
 ```toml
 [dependencies]
-steelseries-screen = { git = "https://github.com/max298/steelseries_screen" }
+steelseries_screen = { git = "https://github.com/max298/steelseries_screen" }
 ```
 
 ### Example
