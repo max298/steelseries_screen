@@ -12,7 +12,7 @@ where the SteelSeries GG Client runs. For Linux you can checkout the awesome [ap
 
 ## Getting Started
 
-Add the crate to your `Cargo.toml` (once published):
+Add the crate to your `Cargo.toml`:
 
 ```toml
 [dependencies]
@@ -28,8 +28,10 @@ api.register();
 // after registration we also need to bind the event we're going to send
 api.bind_event();
 
+// do the actual drawing
 let text_style = MonoTextStyle::new(&FONT_6X10, BinaryColor::On);
 Text::new("Hello World!", Point::new(0, 6), text_style).draw(&mut api.display_apex_mut());
+
 // update the displays
 api.update_displays();
 ```
