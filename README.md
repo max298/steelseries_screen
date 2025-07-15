@@ -3,7 +3,7 @@
 **An embedded-graphics driver for SteelSeries displays.**
 
 This Rust crate allows you to draw graphics and text on supported SteelSeries keyboard displays using the [`embedded-graphics`](https://crates.io/crates/embedded-graphics) ecosystem.
-Please note that this is a very early (hacky) implementation which is not finished at all.
+Please note that this is a very early (hacky) implementation which is not finished yet, but it does work.
 
 The implementation uses the official GameSense-SDK, which limits the platforms to macOS and windows, as these are the only platforms
 where the SteelSeries GG Client runs. For Linux you can checkout the awesome [apex-tux](https://github.com/not-jan/apex-tux) project which also works on linux.
