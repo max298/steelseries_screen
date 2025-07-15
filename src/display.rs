@@ -1,9 +1,9 @@
 use std::io::Error;
 
-use crate::api::GameSenseAPI;
 use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
 
 /// SteelSeries-Devices which can be targeted
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum SteelSeriesLCDType {
     /// Rival 700 and Rival 710
     Rival7x0,
@@ -15,9 +15,19 @@ pub enum SteelSeriesLCDType {
     GameDAC,
 }
 
-/// returns the dimensions for each type of hardware
 impl SteelSeriesLCDType {
-    fn dimensions(&self) -> Size {
+    /// Helper to get all supported LCD Types
+    pub fn all() -> &'static [SteelSeriesLCDType] {
+        &[
+            SteelSeriesLCDType::Apex,
+            SteelSeriesLCDType::Arctis,
+            SteelSeriesLCDType::GameDAC,
+            SteelSeriesLCDType::Rival7x0,
+        ]
+    }
+
+    /// returns the dimensions for each type of hardware
+    pub fn dimensions(&self) -> Size {
         match self {
             Self::Apex => Size::new(128, 40),
             Self::Arctis => Size::new(128, 48),
@@ -30,57 +40,24 @@ impl SteelSeriesLCDType {
 /// Display driver for SteelSeries devices
 pub struct SteelSeriesDisplay {
     lcd_type: SteelSeriesLCDType,
-    framebuffer: Vec<u8>,
-    api: GameSenseAPI,
+    pub framebuffer: Vec<u8>,
 }
 
 impl SteelSeriesDisplay {
-    /// Create a new instance of a display
+    /// Create a new instance of a display which can be used by embedded_graphics
     /// # Arguments
     ///
     /// * `lcd_type` - The device type which will be targeted
-    /// * `game_name` - A game name which will be shown in the SteelSeries Desktop Application. Allowed are upper-case A-Z, 0-9, hyphen, and underscore.\
-    /// * `game_description` - A description which will be shown in the SteelSeries Desktop Application
-    /// * `developer` - A name of the developer, will also be shown in the SteelSeries Desktop Application
-    pub fn new(lcd_type: SteelSeriesLCDType, game_name: String) -> SteelSeriesDisplay {
+    ///
+    pub fn new(lcd_type: SteelSeriesLCDType) -> SteelSeriesDisplay {
         let size = lcd_type.dimensions();
-        let api = GameSenseAPI::new(game_name, size.width as u8, size.height as u8);
 
         let framebuffer = vec![0; size.width as usize * size.height as usize / 8];
 
         SteelSeriesDisplay {
             lcd_type,
             framebuffer,
-            api,
         }
-    }
-
-    /// Set the game developer name. **Note**: Must be called prior to calling register()
-    pub fn developer(&mut self, developer: &str) {
-        self.api.developer(developer.to_string());
-    }
-
-    /// Set the game description name. **Note**: Must be called prior to calling register()
-    pub fn game_description(&mut self, description: &str) {
-        self.api.game_description(description.to_string());
-    }
-
-    /// Before sending data to the API, we must register each "game"
-    pub fn register(&self) {
-        let _ = self.api.register();
-    }
-
-    /// Before sending data to the API, we bind the event which will handle our updated data.
-    pub fn bind(&self) {
-        let _ = self.api.bind_event();
-    }
-
-    /// Call flush to actually send the data to the device. When calling flush, a POST to the
-    /// API endpoint is being made, which will then update the device. Without calling flush,
-    /// no data is being sent to the device.
-    pub fn flush(&mut self) -> Result<(), Error> {
-        let _ = self.api.send_event(&self.framebuffer);
-        Ok(())
     }
 }
 
