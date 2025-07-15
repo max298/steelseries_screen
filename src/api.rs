@@ -37,11 +37,8 @@ fn get_api_addr() -> Result<String, Error> {
         std::env::var("PROGRAMDATA").expect("Could not find env %PROGRAM DATA%") + "/SteelSeries";
     #[cfg(target_os = "macos")]
     let engine_path = "/Library/Application Support/";
-    let mut file = File::open(format!(
-        "{}/SteelSeries Engine 3/coreProps.json",
-        engine_path
-    ))
-    .expect("Could not open SteelSeries Engine Information. Is SteelSeries Engine running?");
+    let mut file = File::open(format!("{engine_path}/SteelSeries Engine 3/coreProps.json"))
+        .expect("Could not open SteelSeries Engine Information. Is SteelSeries Engine running?");
     let mut buff = String::new();
     file.read_to_string(&mut buff)?;
 
@@ -140,7 +137,7 @@ impl GameSenseAPI {
     }
 
     /// Register our game to the GameSense API.
-    pub fn register(&self) -> Result<(), reqwest::Error> {
+    pub fn register(&self) {
         let data = serde_json::to_string(&self.game_metadata)
             .expect("Could not serialize JSON body for registration");
         let res = self
@@ -148,12 +145,12 @@ impl GameSenseAPI {
             .post(format!("http://{}/game_metadata", self.address))
             .body(data)
             .headers((*self.headers).clone())
-            .send()?;
-        check_response(res)
+            .send();
+        check_response(res.unwrap());
     }
 
     /// Bind the UPDATE event. This must be called AFTER the registration of the game.
-    pub fn bind_event(&self) -> Result<(), reqwest::Error> {
+    pub fn bind_event(&self) {
         let mut handler_datas: Vec<serde_json::Value> = vec![];
 
         for lcd_type in self.displays.keys() {
@@ -182,12 +179,12 @@ impl GameSenseAPI {
             .post(format!("http://{}/bind_game_event", self.address))
             .body(data)
             .headers((*self.headers).clone())
-            .send()?;
-        check_response(res)
+            .send();
+        check_response(res.unwrap());
     }
 
-    /// Call this function to update the screens.
-    pub fn update_displays(&self) -> Result<(), reqwest::Error> {
+    /// Call this method to update the screens.
+    pub fn update_displays(&self) {
         let mut img_datas: Map<String, serde_json::Value> = Map::new();
         for (lcd_type, display) in &self.displays {
             let dimensions = lcd_type.dimensions();
@@ -209,8 +206,8 @@ impl GameSenseAPI {
             .post(format!("http://{}/game_event", self.address))
             .body(data)
             .headers((*self.headers).clone())
-            .send()?;
-        check_response(res)
+            .send();
+        check_response(res.unwrap());
     }
 
     /// 128x40 display for Apex7, Apex 7 TKL, Apex Pro and Apex Pro TKL.
@@ -235,7 +232,7 @@ impl GameSenseAPI {
             .unwrap()
     }
 
-    /// The GameSense API expects us to send a heartbeat every ~15seconds. Use this function to continously
+    /// The GameSense API expects us to send a heartbeat every ~15seconds. Use this method to continously
     /// send a heartbeat every 10 seconds.
     /// Note that this is not required if you're updating the screen within the 15 seconds time interval
     /// If you send data only periodically, you should send the heartbeat in order to prevent the device
@@ -253,7 +250,7 @@ impl GameSenseAPI {
         std::thread::spawn(move || {
             while send_heartbeat.load(Ordering::Relaxed) {
                 let _ = client
-                    .post(format!("http://{}/game_heartbeat", address))
+                    .post(format!("http://{address}/game_heartbeat"))
                     .body(data.clone())
                     .headers(headers.clone())
                     .send();
@@ -269,9 +266,10 @@ impl GameSenseAPI {
 }
 
 // Helper which panics if the response of the REST request is not 200
-fn check_response(res: Response) -> Result<(), reqwest::Error> {
-    if !res.status().is_success() {
-        panic!("Request failed: {:?}", res.text().unwrap());
-    }
-    Ok(())
+fn check_response(res: Response) {
+    assert!(
+        res.status().is_success(),
+        "Request failed! {:?}",
+        res.text().unwrap()
+    );
 }

@@ -1,4 +1,5 @@
-//! Display driver for SteelSeries GG
+#![warn(clippy::pedantic)]
+//! Display driver for `SteelSeries GG`-LCD-Devices
 //!
 //! This crate provides a very basic driver for the SteelSeries LCD Displays.
 //! It uses the official GameSense SDK which is a framework in SteelSeries Engine

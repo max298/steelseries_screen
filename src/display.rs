@@ -72,10 +72,7 @@ impl DrawTarget for SteelSeriesDisplay {
     type Error = Error;
 
     fn clear(&mut self, color: Self::Color) -> Result<(), Self::Error> {
-        let target = match color.is_on() {
-            true => 255,
-            false => 0,
-        };
+        let target = if color.is_on() { 255 } else { 0 };
         for i in 0..self.framebuffer.len() {
             self.framebuffer[i] = target;
         }
@@ -86,13 +83,15 @@ impl DrawTarget for SteelSeriesDisplay {
     where
         I: IntoIterator<Item = Pixel<Self::Color>>,
     {
-        let width = self.size().width as i32;
-        let height = self.size().height as i32;
+        let size = self.size();
+        let width = i32::try_from(size.width).expect("Could not parse width!");
+        let height = i32::try_from(size.height).expect("Could not parse height!");
         // fill the framebuffer
-        for Pixel(coord, color) in pixels.into_iter() {
+        for Pixel(coord, color) in pixels {
             let (x, y) = coord.into();
             if x >= 0 && y >= 0 && x < width && y <= height {
-                let pixel_index: usize = y as usize * 128 + x as usize;
+                let pixel_index: usize = usize::try_from(y).expect("Could not parse y-coord") * 128
+                    + usize::try_from(x).expect("Could not parse x-coord!");
                 let byte_index: usize = pixel_index / 8;
                 let bit_offset = 7 - (pixel_index % 8); // MSB-first in each byte
                 match color {

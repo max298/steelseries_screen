@@ -16,9 +16,9 @@ fn main() {
     api.game_description("This shows hello world!".to_string());
 
     // the GameSense API expects the 'game' (or application) to register before it sends data
-    let _ = api.register();
+    api.register();
     // after registration we also need to bind the event we're going to send
-    let _ = api.bind_event();
+    api.bind_event();
     // send a heartbeat every 10 seconds to prevent the display from being reset if no data is sent
     api.register_heartbeat();
 
@@ -27,7 +27,7 @@ fn main() {
 
     // call update_displays to update the devices
     // note that in this example we only send data for a display of type apex (128x40).
-    let _ = api.update_displays();
+    api.update_displays();
 
     // show hello world for 60 seconds
     std::thread::sleep(Duration::from_secs(60));
