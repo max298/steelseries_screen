@@ -103,7 +103,7 @@ impl DrawTarget for SteelSeriesDisplay {
                     }
                 }
             } else {
-                println!("Warning: Ignoring attempt to draw out of bounds!");
+                println!("Warning: Ignoring attempt to draw pixel out of bounds! x: {x}, y: {y}");
             }
         }
         Ok(())
